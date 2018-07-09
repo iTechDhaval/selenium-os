@@ -8,7 +8,7 @@ ADD http://icertprod.iad.ca.inet/certenroll/iRoot2015CA.crt \
     http://icertprod.iad.ca.inet/certenroll/iSub2015CA.crt \
     /tmp/
 
-RUN apt-get -qqy install openssl ca-certificates nss-tools && \
+RUN apt-get -qqy install openssl ca-certificates libnss3-tools && \
     mkdir /usr/local/share/ca-certificates/cacert.org && \
     openssl x509 \
         -inform der \
@@ -22,7 +22,7 @@ RUN apt-get -qqy install openssl ca-certificates nss-tools && \
     find /usr/local/share/ca-certificates/cacert.org/ -name "*.pem" -exec sh -c 'mv "$1" "${1%.pem}.crt"' _ {} \; && \
     update-ca-certificates && \
     chmod 0605 /tmp/*.crt && \
-    apt -qyy autoremove && \
+    apt-get -qyy autoremove && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 COPY ./contrib /usr/local/bin
