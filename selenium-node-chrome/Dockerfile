@@ -19,9 +19,7 @@ RUN apt-get -qqy install openssl ca-certificates nss-tools && \
         -in /tmp/iSub2015CA.crt \
         -out /usr/local/share/ca-certificates/cacert.org/iSub2015CA.pem && \
     cd /usr/local/share/ca-certificates/cacert.org && \
-    rename \
-        's/.pem$/.crt/' \
-        /usr/local/share/ca-certificates/cacert.org/*.pem && \
+    find /usr/local/share/ca-certificates/cacert.org/ -name "*.pem" -exec sh -c 'mv "$1" "${1%.pem}.crt"' _ {} \; && \
     update-ca-certificates && \
     chmod 0605 /tmp/*.crt && \
     apt -qyy autoremove && \
