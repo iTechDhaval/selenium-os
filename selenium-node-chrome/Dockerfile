@@ -27,16 +27,17 @@ RUN apt-get update && apt-get -qqy install openssl ca-certificates libnss3-tools
 
 COPY ./contrib /usr/local/bin
 
+RUN mkdir -p $HOME/.pki/nssdb && \
+    chmod 700 $HOME/.pki/nssdb && \
+    certutil -d $HOME/.pki/nssdb -N && \
+    ls -la /tmp/*.crt && \
+    certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iRoot2015CA.crt" -i /tmp/iRoot2015CA.crt && \
+    certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iSub2015CA.crt" -i /tmp/iSub2015CA.crt
+
 RUN chown -R 1001:0 /opt/selenium && \
   /usr/local/bin/fix-permissions /opt/selenium && \
   /usr/local/bin/fix-permissions $HOME
 
 USER 1001
 WORKDIR $HOME
-
-RUN mkdir -p $HOME/.pki/nssdb && \
-    chmod 700 $HOME/.pki/nssdb && \
-    certutil -d $HOME/.pki/nssdb -N && \
-    certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iRoot2015CA.crt" -i /tmp/iRoot2015CA.crt && \
-    certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iSub2015CA.crt" -i /tmp/iSub2015CA.crt
 
