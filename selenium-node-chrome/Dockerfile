@@ -8,7 +8,7 @@ ADD http://icertprod.iad.ca.inet/certenroll/iRoot2015CA.crt \
     http://icertprod.iad.ca.inet/certenroll/iSub2015CA.crt \
     /tmp/
 
-RUN apt-get -qqy install openssl ca-certificates libnss3-tools && \
+RUN apt-get update && apt-get -qqy install openssl ca-certificates libnss3-tools && \
     mkdir /usr/local/share/ca-certificates/cacert.org && \
     openssl x509 \
         -inform der \
