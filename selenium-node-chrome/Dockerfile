@@ -34,8 +34,9 @@ RUN chown -R 1001:0 /opt/selenium && \
 USER seluser
 
 RUN mkdir -p $HOME/.pki/nssdb && \
-    chmod 777 $HOME/.pki/nssdb && \
+    chmod -R 700 $HOME/.pki/nssdb && \
     certutil -d $HOME/.pki/nssdb -N && \
+    chmod -R 644 $HOME/.pki/nssdb && \
     ls -la /tmp/*.crt && \
     certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iRoot2015CA.crt" -i /tmp/iRoot2015CA.crt && \
     certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iSub2015CA.crt" -i /tmp/iSub2015CA.crt
