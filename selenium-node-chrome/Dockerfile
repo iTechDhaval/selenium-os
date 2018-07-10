@@ -8,7 +8,7 @@ ADD http://icertprod.iad.ca.inet/certenroll/iRoot2015CA.crt \
     http://icertprod.iad.ca.inet/certenroll/iSub2015CA.crt \
     /tmp/
 
-RUN apt-get update && apt-get -qqy install openssl ca-certificates libnss3-tools && \
+RUN apt-get update && apt-get -qqy install openssl ca-certificates libnss3-tools curl && \
     mkdir /usr/local/share/ca-certificates/cacert.org && \
     openssl x509 \
         -inform der \
@@ -21,11 +21,17 @@ RUN apt-get update && apt-get -qqy install openssl ca-certificates libnss3-tools
     cd /usr/local/share/ca-certificates/cacert.org && \
     find /usr/local/share/ca-certificates/cacert.org/ -name "*.pem" -exec sh -c 'mv "$1" "${1%.pem}.crt"' _ {} \; && \
     update-ca-certificates && \
-    chmod 0605 /tmp/*.crt && \
+    chmod 0655 /tmp/*.crt && \
     apt-get -qyy autoremove && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 COPY ./contrib /usr/local/bin
+
+RUN chown -R 1001:0 /opt/selenium && \
+  /usr/local/bin/fix-permissions /opt/selenium && \
+  /usr/local/bin/fix-permissions $HOME
+
+USER seluser
 
 RUN mkdir -p $HOME/.pki/nssdb && \
     chmod 700 $HOME/.pki/nssdb && \
@@ -33,10 +39,6 @@ RUN mkdir -p $HOME/.pki/nssdb && \
     ls -la /tmp/*.crt && \
     certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iRoot2015CA.crt" -i /tmp/iRoot2015CA.crt && \
     certutil -d sql:$HOME/.pki/nssdb -A -t TC -n "iSub2015CA.crt" -i /tmp/iSub2015CA.crt
-
-RUN chown -R 1001:0 /opt/selenium && \
-  /usr/local/bin/fix-permissions /opt/selenium && \
-  /usr/local/bin/fix-permissions $HOME
 
 USER 1001
 WORKDIR $HOME
